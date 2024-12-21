@@ -379,87 +379,67 @@ class ClothingStoreChat:
         # Play greeting sound
         self.play_sound(self.sound_paths['greeting'])
         
-        # Welcome messages with humor
-        welcome_messages = [
-            f"{current_customer['name']}: السلام عليكم يا معلم 👋",
-            f"{self.seller['name']}: وعليكم السلام يا قمر 🌟",
-            f"{current_customer['name']}: عايز بدلة حلوة كده 😊",
-            f"{self.seller['name']}: اكيد يا باشا، احنا عندنا احلى البدل 👔"
-        ]
-        
-        for message in welcome_messages:
-            self.display_message(message, align='left' if current_customer['name'] in message else 'right')
-            time.sleep(1)
-        
-        # Main conversation loop with funny interactions
-        message_count = 0
-        max_messages = 10  # Shorter conversation before fight
-        
-        while self.conversation_running and message_count < max_messages:
-            # Mix regular and funny messages
-            if random.random() < 0.6:  # 60% chance for funny messages
-                customer_message = random.choice(current_customer['funny_messages'])
-                seller_message = random.choice(self.seller['funny_messages'])
-            else:
-                customer_message = random.choice(current_customer['messages'])
-                seller_message = random.choice(self.seller['messages'])
-            
-            self.display_message(f"{current_customer['name']}: {customer_message}", align='left')
-            time.sleep(random.uniform(1, 2))
-            message_count += 1
-            
-            self.display_message(f"{self.seller['name']}: {seller_message}", align='right')
-            time.sleep(random.uniform(1, 2))
-            message_count += 1
-
-        # Start the fight sequence
-        self.start_fight(current_customer)
-        
-        stop_background_sound.set()
-
-    def start_fight(self, customer):
-        fight_sequence = [
-            (customer['name'], "انت عارف البدلة دي بكام في المحل اللي جنبك؟ 😤"),
-            (self.seller['name'], "ما تروح تشتري من هناك يا حبيبي 😒"),
-            (customer['name'], "لا هشتري من هنا وبنص السعر 😠"),
-            (self.seller['name'], "يا روح امك انت جاي تهزر ولا ايه؟ 😡"),
-            (customer['name'], "انت عارف انا مين؟ 💪"),
-            (self.seller['name'], "ما تقول انت مين يا فالح! 🤬"),
-            (customer['name'], "انا... انا... ابن خالة جوز اخت مرات عم صاحب المحل اللي جنبك 😎"),
-            (self.seller['name'], "يا راجل؟ ما تقول من الصبح! اتفضل بره يا حبيبي 🚪"),
-            (customer['name'], "لا مش هخرج الا لما تبيعلي البدلة بربع التمن 😈"),
-            (self.seller['name'], "يا جدعان... حد يكلملي الشرطة 📱"),
-            (customer['name'], "شرطة؟ طيب هوريك 😤"),
-            (self.seller['name'], "ولاد الحلال... الحقوني 😱"),
-            ("system", "------------------------"),
-            ("system", "صوت خبط وزجاج بيتكسر 💥"),
-            ("system", "------------------------"),
-            (customer['name'], "آآه... رجلي 😫"),
-            (self.seller['name'], "يا رب استر... 😰"),
-            ("system", "صوت عربية الإسعاف... 🚑"),
-            ("system", "------------------------"),
-            (self.seller['name'], "يارب استر... ده كان يوم سودة 😅"),
+        # المحادثة الأساسية
+        conversation_sequence = [
+            (current_customer['name'], "السلام عليكم... هو حضرتك عندك بدل؟"),
+            (self.seller['name'], "وعليكم السلام يا قمر، احنا عندنا كل حاجة... البدلة اللي في بالك موجودة عندي 😎"),
+            (current_customer['name'], "طيب ممكن اشوف بدلة مقاس لارج؟"),
+            (self.seller['name'], "لارج؟ متقلقش... عندي مقاسات من لارج لحد جامبو 😅"),
+            (current_customer['name'], "طيب ممكن اجرب دي؟"),
+            (self.seller['name'], "اتفضل يا باشا... بس خلي بالك البدلة دي لو لبستها هتبقى شبه عادل إمام في فيلم الكيت كات 😂"),
+            (current_customer['name'], "بس دي ضيقة شوية..."),
+            (self.seller['name'], "ضيقة؟ دي انت لو مشيت بيها في الشارع الناس هتقول عليك مستورد 🌟"),
+            (current_customer['name'], "طيب وبكام دي؟"),
+            (self.seller['name'], "دي يا باشا... *يتنحنح*... بـ 2000 جنيه بس"),
+            (current_customer['name'], "2000؟! انت بتهزر صح؟"),
+            (self.seller['name'], "هزار؟ دي اصلاً كانت ب 3000 بس انت شكلك زبون محترم وانا بحب الناس المحترمة 😇"),
+            (current_customer['name'], "لا كتير والله... ممكن 1000؟"),
+            (self.seller['name'], "1000؟ هو احنا بنبيع شاورما يا باشا؟ 😅"),
+            (current_customer['name'], "طيب 1200 وبالكتير يعني"),
+            (self.seller['name'], "بص يا حبيبي... عشان خاطر عيونك الحلوة... 1800 وكلمة اخيرة"),
+            (current_customer['name'], "لا والله كتير... انا شفت بدل احسن من كده ب 1000"),
+            (self.seller['name'], "احسن من كده؟ هو انت بتقارن فيراري بعربية توك توك؟ 😂"),
+            (current_customer['name'], "يا عم انت بتضحك علينا ولا ايه؟"),
+            (self.seller['name'], "اضحك عليك؟ ده انا لو بضحك على حد هضحك على نفسي 🤣"),
+            (current_customer['name'], "طيب خلاص... هشوف محل تاني"),
+            (self.seller['name'], "محل تاني؟ ده انت لو لفيت البلد كلها مش هتلاقي بدلة زي دي... دي حتى القماش بتاعها مستورد"),
+            (current_customer['name'], "مستورد منين بقى؟"),
+            (self.seller['name'], "من باريس... يعني من شبرا 😅"),
+            (current_customer['name'], "هههه طيب يا عم... 1500 وخلاص"),
+            (self.seller['name'], "1500؟ طيب تعالى نعمل حاجة حلوة... 1700 وهديك كرافتة هدية"),
+            (current_customer['name'], "الكرافتة بكام دي اصلاً؟"),
+            (self.seller['name'], "دي؟ دي ب 200... بس عشان خاطرك هخليها عليك ب 199.99 😎"),
+            (current_customer['name'], "لا بجد انت راجل مضحك 😂"),
+            (self.seller['name'], "شفت بقى؟ وكمان البدلة هتخليك مضحك زيي 🤣"),
+            (current_customer['name'], "طيب خلاص يا معلم... 1600 وبالكرافتة"),
+            (self.seller['name'], "خلاص يا معلم اتفقنا... بس بشرط"),
+            (current_customer['name'], "شرط ايه؟"),
+            (self.seller['name'], "لو حد سألك جبت البدلة دي منين... قول من برا 😉"),
+            (current_customer['name'], "ههههه ماشي يا معلم"),
+            (self.seller['name'], "تحب اعملك مقاس تاني ولا كفاية عليك كده؟"),
+            (current_customer['name'], "لا كفاية كده... هات البدلة بس"),
+            (self.seller['name'], "طيب الف مبروك يا معلم... البدلة دي هتخليك تتجوز من تاني يوم 💑"),
+            (current_customer['name'], "ربنا يستر... مع السلامة"),
+            (self.seller['name'], "مع السلامة يا قمر... ولو حد سألك متنساش تقول من برا 😅"),
             ("system", "------------------ نهاية المحادثة ------------------")
         ]
 
-        for name, message in fight_sequence:
+        for name, message in conversation_sequence:
             if name == "system":
                 self.display_message(message, align='center')
             else:
-                self.display_message(f"{name}: {message}", align='left' if name == customer['name'] else 'right')
-            if "صوت خبط" in message:
-                self.play_sound(self.sound_paths['expulsion'])
-            time.sleep(1.5)
+                self.display_message(f"{name}: {message}", align='left' if name == current_customer['name'] else 'right')
+            time.sleep(2)
 
+        stop_background_sound.set()
         self.conversation_running = False
         self.start_button.config(state=tk.NORMAL)
 
     def show_final_message(self):
         final_messages = [
-            "------------------ المحل مقفول للصيانة ------------------",
-            "بسبب الخسائر الفادحة في البدل والديكور 😅",
-            "نعتذر عن عدم استقبال زباين دلوقتي",
-            "لحد ما نصلح اللي اتكسر 🏚️",
+            "------------------ انتهى يوم العمل ------------------",
+            "هاني: الحمد لله... كان يوم حلو 😊",
+            "هاني: بكرة نشوف زباين جديدة ان شاء الله 🙏",
             "--------------------------------------------------"
         ]
         
