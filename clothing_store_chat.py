@@ -167,9 +167,9 @@ class ClothingStoreChat:
         ]
         
         # Sound paths
-        self.greeting_sound_path = r"D:\work\python\123.wav"
-        self.expulsion_sound_path = r"D:\work\python\1303451583564087367.wav"
-        self.whatsapp_sound_path = r"D:\work\python\WhatsApp Audio 2024-12-21 at 03.15.56_77d358ee.wav"
+        self.greeting_sound_path = r"\python\123.wav"
+        self.expulsion_sound_path = r"\python\1303451583564087367.wav"
+        self.whatsapp_sound_path = r"\python\WhatsApp Audio 2024-12-21 at 03.15.56_77d358ee.wav"
         
         # Conversation setup
         self.current_customer_index = 0
